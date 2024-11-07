@@ -1,0 +1,60 @@
+﻿open System
+open Falco
+open Falco.Markup
+open Falco.Routing
+open Falco.Htmx
+open Microsoft.AspNetCore.Builder
+
+module View =
+    let template content =
+        Elem.html [ Attr.lang "en" ] [
+            Elem.head [] [
+                Elem.script [ Attr.src HtmxScript.cdnSrc ] [] ]
+            Elem.body []
+                content ]
+
+    module Components =
+        let clicker =
+            Elem.button
+                [ Hx.get "/click"
+                  Hx.swap Hx.Swap.outerHTML ]
+                [ Text.raw "Click Me" ]
+
+        let resetter =
+            Elem.div [ Attr.id "wrapper" ] [
+                Text.h2 "Way to go! You clicked it!"
+                Elem.br []
+                Elem.button
+                    [ Hx.get "/reset"
+                      Hx.swap Hx.Swap.outerHTML
+                      Hx.target (Hx.Target.css "#wrapper") ]
+                    [ Text.raw "Reset" ] ]
+
+module App =
+    let handleIndex : HttpHandler =
+        let html =
+            View.template [
+                Text.h1 "Example: Click & Swap"
+                View.Components.clicker ]
+
+        Response.ofHtml html
+
+    let handleClick : HttpHandler =
+        Response.ofHtml View.Components.resetter
+
+    let handleReset : HttpHandler =
+        Response.ofHtml View.Components.clicker
+
+[<EntryPoint>]
+let main args =
+    let wapp = WebApplication.Create()
+
+    let endpoints =
+        [
+            get "/" App.handleIndex
+            get "/click" App.handleClick
+            get "/reset" App.handleReset
+        ]
+    wapp.UseFalco(endpoints)
+        .Run()
+    0 // Exit code
