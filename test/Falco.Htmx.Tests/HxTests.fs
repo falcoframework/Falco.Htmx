@@ -1,9 +1,7 @@
 namespace Falco.Htmx.Tests
 
-open System
 open Falco.Htmx
 open Falco.Markup
-open Falco.Htmx
 open FsUnit.Xunit
 open Xunit
 
