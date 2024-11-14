@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Falco.Htmx</AssemblyName>
-    <Version>1.0.0-alpha1</Version>
+    <Version>1.0.0-beta1</Version>
 
     <!-- General info -->
     <Description>HTMX Bindings for the Falco web toolkit.</Description>
-    <Copyright>Copyright 2022 Damian Plaza and Pim Brouwers</Copyright>
-    <Authors>Damian Plaza, Pim Brouwers and contributors</Authors>
+    <Copyright>Copyright 2024 Pim Brouwers and Damian Plaza</Copyright>
+    <Authors>Pim Brouwers, Damian Plaza and contributors</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
 
     <!-- Build config -->
@@ -20,13 +20,13 @@
     <!-- NuGet config -->
     <PackageId>Falco.Htmx</PackageId>
     <PackageTags>fsharp;web;falco;falco-sharp;htmx;</PackageTags>
-    <PackageProjectUrl>https://github.com/dpraimeyuu/Falco.Htmx</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/pimbrouwers/Falco.Htmx</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/dpraimeyuu/Falco.Htmx</RepositoryUrl>
+    <RepositoryUrl>https://github.com/pimbrouwers/Falco.Htmx</RepositoryUrl>
 
     <!-- SourceLink settings -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -40,9 +40,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Htmx.fs" />
+    <Compile Include="Core.fs" />
     <Compile Include="Hx.fs" />
-    <Compile Include="Extensions.fs" />
+    <Compile Include="Request.fs" />
+    <Compile Include="Response.fs" />
   </ItemGroup>
 
   <ItemGroup>

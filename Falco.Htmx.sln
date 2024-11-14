@@ -11,9 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{637DC4AC-C
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Falco.Htmx.Tests", "test\Falco.Htmx.Tests\Falco.Htmx.Tests.fsproj", "{CF9948AD-3B91-4504-AACB-4B8EEB4EA148}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{086ACD53-E718-4281-B364-39F63AF493A1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{086ACD53-E718-4281-B364-39F63AF493A1}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HelloWorld", "samples\HelloWorld\HelloWorld.fsproj", "{AB2EFD5B-F371-4AAE-A964-08A6FB5397B0}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ClickAndSwap", "examples\ClickAndSwap\ClickAndSwap.fsproj", "{AB2EFD5B-F371-4AAE-A964-08A6FB5397B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

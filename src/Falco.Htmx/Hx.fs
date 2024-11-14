@@ -1,327 +1,562 @@
-[<RequireQualifiedAccess>]
-module Falco.Htmx.Hx
+namespace Falco.Htmx
 
 open System
 open System.Text.Json
 open Falco.Markup
-open FSharp.Core
 
-/// The hx-target attribute allows you to target a different element for
-/// swapping than the one issuing the AJAX request.
-module Target =
-    /// Indicates that the element that the hx-target attribute is on is the target.
-    let this = This
+/// javascript fatigue:
+/// longing for a hypertext
+/// already in hand
+type Hx =
 
-    /// Resolves to element.nextElementSibling.
-    let nextSibling = NextSibling
+    // ------------
+    // hx-[get|post|put|patch|delete]
+    // ------------
 
-    /// Resolves to element.previousElementSibling.
-    let previousSibling = PreviousSibling
+    /// Issues a GET request to the given URL
+    static member get (uri: string) =
+        Attr.create "hx-get" uri
+
+    /// Issues a POST request to the given URL
+    static member post (uri: string) =
+        Attr.create "hx-post" uri
+
+    /// Issues a PUT request to the given URL
+    static member put (uri: string) =
+        Attr.create "hx-put" uri
+
+    /// Issues a PATCH request to the given URL
+    static member patch (uri: string) =
+        Attr.create "hx-patch" uri
+
+    /// Issues a DELETE request to the given URL
+    static member delete (uri: string) =
+        Attr.create "hx-delete" uri
+
+
+    // ------------
+    // hx-trigger
+    // ------------
+
+    /// Specify the discrete trigger event.
+    static member trigger (event: string, ?modifiers : HxTrigger list, ?filter : string) =
+        let makeFilterString (filter: string) =
+            String.Concat("[", filter, "]")
+
+        let makeModifierString (modifiers: HxTrigger list) =
+            modifiers
+            |> List.map HxTrigger.AsString
+            |> (fun x -> String.Join(" ", x))
+
+        match filter,modifiers with
+        | None, None -> event
+        | Some filter, None -> String.Concat(event,makeFilterString filter)
+        | None, Some modifiers -> String.Concat(event," ",makeModifierString modifiers)
+        | Some filter, Some modifiers -> String.Concat(event,makeFilterString filter," ",makeModifierString modifiers)
+        |> Attr.create "hx-trigger"
+
+
+    // ------------
+    // hx-target
+    // ------------
+
+    /// Specifies the target element to be swapped
+    static member target (hxTarget : HxTarget) =
+        Attr.create "hx-target" (HxTarget.AsString hxTarget)
+
+    /// Indicates that the element that the hx-target attribute is on is the
+    /// target.
+    static member targetThis =
+        Hx.target HxTarget.This
 
     /// A CSS query selector of the element to target.
-    let css selector = CssSelector selector
+    static member targetCss (selector : string) =
+        Hx.target (HxTarget.Css selector)
 
-    /// Find the closest ancestor element or itself, that matches the given CSS selector
-    let closest selector = Closest selector
+    /// Find the first child descendant element that matches the given CSS
+    /// selector.
+    static member targetFind (selector : string) =
+        Hx.target (HxTarget.Find selector)
 
-    /// Find the first child descendant element that matches the given CSS selector.
-    let find selector = Find selector
+    /// Find the closest ancestor element or itself, that matches the given CSS
+    /// selector
+    static member targetClosest (selector : string) =
+        Hx.target (HxTarget.Closest selector)
 
-    /// Scan the DOM forward for the first element that matches the given CSS selector.
-    let next selector = Next selector
+    /// Scan forward for the first element that matches the given CSS selector.
+    static member targetNext (selector : string) =
+        Hx.target (HxTarget.Next selector)
 
-    /// Scan the DOM backward for the first element that matches the given CSS selector.
-    let previous selector = Previous selector
+    /// Scan forward for element.nextElementSibling when no selector is
+    /// specified.
+    static member targetNextSibling =
+        Hx.target HxTarget.NextSibling
+
+    /// Scan backward for the first element that matches the given CSS selector.
+    static member targetPrevious (selector : string) =
+        Hx.target (HxTarget.Previous selector)
+
+    /// Scan backward for element.previousElementSibling when no selector is
+    /// specified.
+    static member targetPreviousSibling =
+        Hx.target HxTarget.PreviousSibling
 
 
-module Timing =
-    /// Millisecond-based timing declaration.
-    let ms (milliseconds: float) = Milliseconds milliseconds
+    // ------------
+    // hx-swap
+    // ------------
 
-    /// Second-based timing declaration.
-    let s (seconds: float) = Seconds seconds
-
-    /// Minute-based timing declaration.
-    let minutes (minutes: float) = Minutes minutes
-
-module Trigger =
-    /// Specify the discrete trigger event.
-    let event (name: string, filters: string option, modifiers: EventModifier list) =
-        Event(name, filters, modifiers)
-
-    /// Specifiy the timing declaration for polling.
-    let poll (timing: TimingDeclaration) = Poll timing
-
-module Swap =
-    /// The default, puts the content inside the target element.
-    let innerHTML = InnerHTML
-
-    /// Replaces the entire target element with the returned content.
-    let outerHTML = OuterHTML
-
-    /// Prepends the content before the first child inside the target.
-    let beforebegin = BeforeBegin
-
-    /// Prepends the content before the target in the target's parent element.
-    let afterbegin = AfterBegin
-
-    /// Appends the content after the last child inside the target.
-    let beforeend = BeforEend
-
-    /// Appends the content after the target in the target's parent element.
-    let afterend = AfterEnd
-
-    /// Deletes the target element regardless of the response.
-    let delete = Delete
-
-    /// Does not append content from response (Out of Band Swaps and Response Headers will still be processed).
-    let none = NoSwap
-
-module SwapOob =
-    /// Enable out-of-band swap.
-    let true' = SwapTrue
+    /// Controls how content is swapped in (outerHTML, beforeEnd, afterend, ...)
+    static member swap (hxSwap : HxSwap) =
+        Attr.create "hx-swap" (HxSwap.AsString hxSwap)
 
     /// The default, puts the content inside the target element.
-    let innerHTML = SwapOption InnerHTML
+    static member swapInnerHtml =
+        Hx.swap HxSwap.InnerHTML
 
     /// Replaces the entire target element with the returned content.
-    let outerHTML = SwapOption OuterHTML
+    static member swapOuterHtml =
+        Hx.swap HxSwap.OuterHTML
 
     /// Prepends the content before the first child inside the target.
-    let beforebegin = SwapOption BeforeBegin
+    static member swapBeforeBegin =
+        Hx.swap HxSwap.BeforeBegin
 
     /// Prepends the content before the target in the target's parent element.
-    let afterbegin = SwapOption AfterBegin
+    static member swapAfterBegin =
+        Hx.swap HxSwap.AfterBegin
 
     /// Appends the content after the last child inside the target.
-    let beforeend = SwapOption BeforEend
+    static member swapBeforeEnd =
+        Hx.swap HxSwap.BeforeEnd
 
     /// Appends the content after the target in the target's parent element.
-    let afterend = SwapOption AfterEnd
+    static member swapAfterEnd =
+        Hx.swap HxSwap.AfterEnd
 
     /// Deletes the target element regardless of the response.
-    let delete = SwapOption Delete
+    static member swapDelete =
+        Hx.swap HxSwap.Delete
 
-    /// Does not append content from response (Out of Band Swaps and Response Headers will still be processed).
-    let none = SwapOption NoSwap
+    /// Does not append content from response (Out of Band Swaps and Response
+    /// Headers will still be processed).
+    static member swapNone =
+        Hx.swap HxSwap.NoSwap
 
-    let innerHTMLTarget target = SwapOptionSelect(InnerHTML, target)
-    let outerHTMLTarget target = SwapOptionSelect(OuterHTML, target)
-    let beforebeginTarget target = SwapOptionSelect(BeforeBegin, target)
-    let afterbeginTarget target = SwapOptionSelect(AfterBegin, target)
-    let beforeendTarget target = SwapOptionSelect(BeforEend, target)
-    let afterendTarget target = SwapOptionSelect(AfterEnd, target)
-    let deleteTarget target = SwapOptionSelect(Delete, target)
-    let noneTarget target = SwapOptionSelect(NoSwap, target)
 
-module Sync =
-    /// Drop (ignore) this request if an existing request is in flight (the default).
-    let drop = Drop
+    // ------------
+    // hx-swap-oob
+    // ------------
 
-    /// Drop (ignore) this request if an existing request is in flight, and, if that is not the case, abort this request if another request occurs while it is still in flight.
-    let abort = Abort
+    /// Add or remove progressive enhancement for links and forms
+    static member swapOob (hxSwap : HxSwap, ?selector : string) =
+        let createAttr = Attr.create "hx-swap-oob"
+        let swapValue = HxSwap.AsString hxSwap
 
-    /// Abort the current request, if any, and replace it with this request.
-    let replace = Replace
+        match selector with
+        | Some x when not(String.IsNullOrWhiteSpace(x)) ->
+            createAttr (String.Concat(swapValue, ":", x))
+        | _ ->
+            createAttr swapValue
 
-    /// Place this request in the request queue associated with the given element.
-    let queue = Queue Default
+    /// Enable progressive enhancement for links and forms
+    static member swapOobOn =
+        Hx.swapOob (HxSwap.OuterHTML)
 
-    /// Queue the first request to show up while a request is in flight.
-    let queueFirst = Queue First
 
-    /// Queue the last request to show up while a request is in flight.
-    let queueLast = Queue Last
+    // ------------
+    // hx-select
+    // ------------
 
-    /// Queue all requests that show up while a request is in flight.
-    let queueAll = Queue All
+    /// Select the content you want swapped from a response.
+    static member select selector =
+        Attr.create "hx-select" selector
 
-module Url =
-    let true' = True
-    let false' = False
-    let path url' = Url url'
 
-module Param =
-    let all = AllParam
-    let none = NoParams
-    let exclude names = ExcludeParam names
-    let include' names = IncludeParam names
+    // ------------
+    // hx-select-oob
+    // ------------
 
-module Disinherit =
-    let all = AllAttributes
-    let exclude names = ExcludeAttributes names
+    /// Select content from a response to be swapped in via an out-of-band swap.
+    static member selectOob (selectors : string seq) =
+        Attr.create "hx-select-oob" (String.Join(",", selectors))
 
-// ------------
-// AJAX
-// ------------
+    /// Select content from a response to be swapped in via an out-of-band swap.
+    static member selectOob (selector : string) =
+        Hx.selectOob (seq { selector })
 
-/// Issues a GET request to the given URL
-let get (uri: string) =
-    Attr.create "hx-get" uri
+    // ------------
+    // hx-boost
+    // ------------
 
-/// Issues a POST request to the given URL
-let post (uri: string) =
-    Attr.create "hx-post" uri
+    /// Add or remove progressive enhancement for links and forms
+    static member boost (enabled: bool) =
+        Attr.create "hx-boost" (if enabled then "true" else "false")
 
-/// Issues a PUT request to the given URL
-let put (uri: string) =
-    Attr.create "hx-put" uri
+    /// Enable progressive enhancement for links and forms
+    static member boostOn =
+        Hx.boost true
 
-/// Issues a PATCH request to the given URL
-let patch (uri: string) =
-    Attr.create "hx-patch" uri
+    /// Disable progressive enhancement for links and forms
+    static member boostOff =
+        Hx.boost false
 
-/// Issues a DELETE request to the given URL
-let delete (uri: string) =
-    Attr.create "hx-delete" uri
 
-// ------------
-// Commmon Attributes
-// ------------
+    // ------------
+    // hx-push-url
+    // ------------
 
-/// Add or remove progressive enhancement for links and forms
-let boost (enabled: bool) =
-    Attr.create "hx-boost" (if enabled then "true" else "false")
 
-/// Pushes the URL into the browser location bar, creating a new history entry
-let pushUrl (option: UrlOption) =
-    Attr.create "hx-push-url" (UrlOption.AsString option)
+    /// Pushes the specified URL into the browser location bar, creating a new
+    /// history entry.
+    static member pushUrl (uri : string) =
+        Attr.create "hx-push-url" uri
 
-/// Select content to swap in from a response
-let select (option: HxTarget) =
-    Attr.create "hx-select" (HxTarget.AsString option)
+    /// Pushes the URL into the browser location bar, creating a new history
+    /// entry.
+    static member pushUrl (enabled : bool) =
+        Hx.pushUrl (if enabled then "true" else "false")
 
-/// Select content to swap in from a response, out of band (somewhere other than the target)
-let selectOob (option: HxTarget) =
-    Attr.create "hx-select-oob" (HxTarget.AsString option)
 
-/// Controls how content is swapped in (outerHTML, beforeEnd, afterend, ...)
-let swap (option: HxSwap) =
-    Attr.create "hx-swap" (HxSwap.AsString option)
+    // ------------
+    // hx-sync
+    // ------------
 
-/// Marks content in a response to be out of band (should swap in somewhere other than the target)
-let swapOob (option: SwapOobOption) =
-    Attr.create "hx-swap-oob" (SwapOobOption.AsString option)
-
-/// Specifies the target element to be swapped
-let target (option: HxTarget) =
-    Attr.create "hx-target" (HxTarget.AsString option)
-
-/// Specifies the event that triggers the request
-let trigger (options: HxTrigger list) =
-    options
-    |> List.map HxTrigger.AsString
-    |> fun x -> String.Join(", ", x)
-    |> Attr.create "hx-trigger"
-
-/// Adds values to the parameters to submit with the request (JSON-formatted)
-let vals input =
-    input
-    |> fun x -> JsonSerializer.Serialize(x)
-    |> Attr.create "hx-vals"
-
-/// Adds values to the parameters to submit with the request (JSON-formatted)
-let valsJs json =
-    Attr.create
-        "hx-vals"
-        (String.Concat [ "js:"; json ])
-
-// ------------
-// Additional Attributes
-// ------------
-
-/// Shows a confim() dialog before issuing a request
-let confirm =
-    Attr.create "hx-confirm"
-
-/// Disables htmx processing for the given node and any children nodes
-let disable =
-    Attr.createBool "hx-disable"
-
-/// Control and disable automatic attribute inheritance for child nodes
-let disinherit (option: DisinheritOption) =
-    Attr.create "hx-disinherit" (DisinheritOption.AsString option)
-
-/// Changes the request encoding type
-let encoding =
-    Attr.create "hx-encoding"
-
-/// Extensions to use for this element
-let ext =
-    Attr.create "hx-ext"
-
-/// Adds to the headers that will be submitted with the request
-let headers (values: (string * string) list) =
-    values
-    |> Map.ofList
-    |> fun x -> JsonSerializer.Serialize(x)
-    |> Attr.create "hx-headers"
-
-/// The element to snapshot and restore during history navigation
-let historyElt =
-    Attr.createBool "hx-history-elt"
-
-/// Include additional data in requests
-let include' (values: HxTarget list) =
-    values
-    |> List.map HxTarget.AsString
-    |> fun x -> String.Join(", ", x)
-    |> Attr.create "hx-include"
-
-/// The element to put the htmx-request class on during the request
-let indicator (option: HxTarget) =
-    Attr.create "hx-indicator" (HxTarget.AsString option)
-
-/// Filters the parameters that will be submitted with a request
-let params' (option: ParamOption) =
-    Attr.create "hx-params" (ParamOption.AsString option)
-
-/// Specifies elements to keep unchanged between requests
-let preserve =
-    Attr.createBool "hx-preserve"
-
-/// Shows a prompt() before submitting a request
-let prompt =
-    Attr.create "hx-prompt"
-
-/// Replace the URL in the browser location bar
-let replaceUrl (option: UrlOption) =
-    Attr.create "hx-replace-url" (UrlOption.AsString option)
-
-/// Configures various aspects of the request
-let request =
-    Attr.create "hx-request"
-
-/// Control how requests made be different elements are synchronized
-let sync (targetOption: HxTarget, syncOption: SyncOption option) =
-    let attrValue =
-        let target' = HxTarget.AsString targetOption
-
+    /// Synchronize AJAX requests between multiple elements.
+    static member sync (targetOption : HxTarget, ?syncOption : HxSync) =
         match syncOption with
-        | Some sync' ->
-            String.Concat(
-                [
-                    target'
-                    ":"
-                    SyncOption.AsString sync'
-                ]
-            )
-        | None -> target'
+        | Some hxSync -> String.Concat(HxTarget.AsString targetOption, ":", HxSync.AsString hxSync)
+        | None -> HxTarget.AsString targetOption
+        |> Attr.create "hx-sync"
 
-    Attr.create "hx-sync" attrValue
+    // ------------
+    // hx-include
+    // ------------
 
-/// Whether to force elements to validate themselves before a request
-let validate (value: bool) =
-    Attr.create "hx-validate" (string value)
+    /// Include additional element values in an AJAX request.
+    static member include' (hxTarget : HxTarget) =
+        Attr.create "hx-include" (HxTarget.AsString hxTarget)
 
-/// Whether to save sensitive data to the history cache
-let history (value: bool) =
-    Attr.create "hx-history" (string value)
+    /// Include the current element in the request
+    static member includeThis =
+        Hx.include' HxTarget.This
 
-/// Handle any event with a script inline
-let on eventName =
-    Attr.create $"hx-on:{eventName}"
+    /// Include CSS query selector of the element to include.
+    static member includeCss (selector : string) =
+        Hx.include' (HxTarget.Css selector)
 
-/// adds the `disabled` attribute to the specified elements while a request is in flight
-let disabledElement (targetOption: HxTarget) =
-    Attr.create "hx-disabled-elt" (HxTarget.AsString targetOption)
+    /// Include the first child descendant element that matches the given CSS
+    /// selector.
+    static member includeFind (selector : string) =
+        Hx.include' (HxTarget.Find selector)
+
+    /// Include the closest ancestor element or itself, that matches the given
+    /// CSS selector
+    static member includeClosest (selector : string) =
+        Hx.include' (HxTarget.Closest selector)
+
+    /// Include forward for the first element that matches the given CSS
+    /// selector.
+    static member includeNext (selector : string) =
+        Hx.include' (HxTarget.Next selector)
+
+    /// Include forward for element.nextElementSibling when no selector is
+    /// specified.
+    static member includeNextSibling =
+        Hx.include' HxTarget.NextSibling
+
+    /// Include backward for the first element that matches the given CSS
+    /// selector.
+    static member includePrevious (selector : string) =
+        Hx.include' (HxTarget.Previous selector)
+
+    /// Include backward for element.previousElementSibling when no selector is
+    /// specified.
+    static member includePreviousSibling =
+        Hx.include' HxTarget.PreviousSibling
+
+
+    // ------------
+    // hx-params
+    // ------------
+
+    /// Filter the parameters that will be submitted with an AJAX request.
+    static member params' (hxParams : HxParams) =
+        Attr.create "hx-params" (HxParams.AsString hxParams)
+
+    /// Include all parameters.
+    static member paramsAll =
+        Hx.params' HxParams.All
+
+    /// Include no parameters.
+    static member paramsNone =
+        Hx.params' HxParams.NoParams
+
+    ///  Include all but parameters specified.
+    static member paramsExclude exclude =
+        Hx.params' (HxParams.Exclude exclude)
+
+    /// Include all parameters specified.
+    static member paramsInclude include' =
+        Hx.params' (HxParams.Include include')
+
+
+    // ------------
+    // hx-vals
+    // ------------
+
+    /// Add values to submit with the request (JSON format)
+    static member vals json =
+        Attr.create "hx-vals" json
+
+    /// Add values to submit with the request (JS format)
+    static member valsJs js =
+        Hx.vals (String.Concat("js:", js))
+
+
+    // ------------
+    // hx-confirm
+    // ------------
+
+    /// Shows a confirm() dialog before issuing a request
+    static member confirm text =
+        Attr.create "hx-confirm" text
+
+
+    // ------------
+    // hx-disable
+    // ------------
+
+    /// Disables htmx processing for the given node and any children nodes
+    static member disable =
+        Attr.createBool "hx-disable"
+
+
+    // ------------
+    // hx-disabled-elt
+    // ------------
+
+    /// Adds the disabled attribute to the specified elements while a request is
+    /// in flight
+    static member disabled (hxTarget : HxTarget) =
+        Attr.create "hx-disabled-elt" (HxTarget.AsString hxTarget)
+
+    /// Include the current element in the request
+    static member disabledThis =
+        Hx.disabled HxTarget.This
+
+    /// Include CSS query selector of the element to include.
+    static member disabledCss (selector : string) =
+        Hx.disabled (HxTarget.Css selector)
+
+    /// Include the first child descendant element that matches the given CSS
+    /// selector.
+    static member disabledFind (selector : string) =
+        Hx.disabled (HxTarget.Find selector)
+
+    /// Include the closest ancestor element or itself, that matches the given
+    /// CSS selector
+    static member disabledClosest (selector : string) =
+        Hx.disabled (HxTarget.Closest selector)
+
+    /// Include forward for the first element that matches the given CSS
+    /// selector.
+    static member disabledNext (selector : string) =
+        Hx.disabled (HxTarget.Next selector)
+
+    /// Include forward for element.nextElementSibling when no selector is
+    /// specified.
+    static member disabledNextSibling =
+        Hx.disabled HxTarget.NextSibling
+
+    /// Include backward for the first element that matches the given CSS
+    /// selector.
+    static member disabledPrevious (selector : string) =
+        Hx.disabled (HxTarget.Previous selector)
+
+    /// Include backward for element.previousElementSibling when no selector is
+    /// specified.
+    static member disabledPreviousSibling =
+        Hx.disabled HxTarget.PreviousSibling
+
+
+    // ------------
+    // hx-inherit
+    // ------------
+
+    /// Control and enable automatic attribute inheritance for child nodes if it
+    /// has been disabled by default.
+    static member inherit' (attributes : string) =
+        Attr.create "hx-inherit" attributes
+
+    /// Control and enable automatic attribute inheritance for child nodes if it
+    /// has been disabled by default.
+    static member inheritAll =
+        Hx.inherit' "*"
+
+
+    // ------------
+    // hx-disinherit
+    // ------------
+
+    /// Control and disable automatic attribute inheritance for child nodes.
+    static member disinherit (attributes : string) =
+        Attr.create "hx-disinherit" attributes
+
+    /// Control and disable automatic attribute inheritance for child nodes.
+    static member disinheritAll =
+        Hx.disinherit "*"
+
+
+    // ------------
+    // hx-encoding
+    // ------------
+
+    /// Changes the request encoding type to multipart/form-data.
+    static member encodingMultipart =
+        Attr.create "hx-encoding" "multipart/form-data"
+
+
+    // ------------
+    // hx-ext
+    // ------------
+
+    /// Extensions to use for this element.
+    static member ext (extensions : string) =
+        Attr.create "hx-ext" extensions
+
+    /// Extensions to ignore for this element.
+    static member extIgnore (extensions : string) =
+        Hx.ext (String.Concat("ignore:", extensions))
+
+
+    // ------------
+    // hx-headers
+    // ------------
+
+    /// Adds to the headers that will be submitted with the request.
+    static member headers (values : (string * string) list, ?evaluate : bool) =
+        values
+        |> Map.ofList
+        |> fun x ->
+            let json = JsonSerializer.Serialize(x)
+            if defaultArg evaluate false then
+                String.Concat("js:", json)
+            else
+                json
+        |> Attr.create "hx-headers"
+
+
+    // ------------
+    // hx-history
+    // ------------
+
+    /// Prevent sensitive data being saved to the history cache.
+    static member historyOff =
+        Attr.create "hx-history" "false"
+
+
+    // ------------
+    // hx-history-elt
+    // ------------
+
+    /// The element to snapshot and restore during history navigation.
+    static member historyElt =
+        Attr.createBool "hx-history-elt"
+
+
+    // ------------
+    // hx-indicator
+    // ------------
+
+    /// The element to put the htmx-request class on during the request.
+    static member indicator (selector : string) =
+        Attr.create "hx-indicator" selector
+
+    /// The closest element to put the htmx-request class on during the request.
+    static member indicatorClosest (selector : string) =
+        Hx.indicator (String.Concat("closest ", selector))
+
+
+    // -----------
+    // hx-preserve
+    // -----------
+
+    /// Specifies elements to keep unchanged between requests.
+    static member preserve =
+        Attr.createBool "hx-preserve"
+
+
+    // -----------
+    // hx-prompt
+    // -----------
+
+    /// Shows a prompt() before submitting a request.
+    static member prompt (message : string) =
+        Attr.create "hx-prompt" message
+
+
+    // -----------
+    // hx-replace-url
+    // -----------
+
+    /// Replace the URL in the browser location bar with the specified.
+    static member replaceUrl (url : string) =
+        Attr.create "hx-replace-url" url
+
+    /// Replace the URL in the browser location bar.
+    static member replaceUrl (enabled : bool) =
+        Hx.replaceUrl (if enabled then "true" else "false")
+
+    /// Replace the URL in the browser location bar.
+    static member replaceUrlOn =
+        Hx.replaceUrl true
+
+    /// Do not replace the URL in the browser location bar.
+    static member replaceUrlOff =
+        Hx.replaceUrl false
+
+
+    // -----------
+    // hx-validate
+    // -----------
+
+    /// Force elements to validate themselves before a request.
+    static member validate =
+        Attr.create "hx-validate" "true"
+
+
+    // -----------
+    // hx-request
+    // -----------
+
+    /// Configure various aspects of the request.
+    static member request (
+        ?timeout : int,
+        ?credentials : bool,
+        ?noHeaders : bool,
+        ?evaluate : bool) =
+        let json =
+            let values =
+                String.Join(",", seq {
+                    match timeout with
+                    | Some x when x > 0 -> yield sprintf "\"timeout\":%i" x
+                    | _ -> ()
+
+                    match credentials with
+                    | Some x when x -> yield "\"credentials\":true"
+                    | _ -> ()
+
+                    match noHeaders with
+                    | Some x when x -> yield "\"noHeaders\":true"
+                    | _ -> () })
+
+            String.Concat("{", values,"}")
+
+        let requestValue =
+            if defaultArg evaluate false then
+                String.Concat("js:", json)
+            else
+                json
+
+        Attr.create "hx-request" requestValue

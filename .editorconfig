@@ -9,7 +9,3 @@ indent_style=space
 indent_size=4
 max_line_length=120
 tab_width=4
-
-[*.{fs,fsx}]
-fsharp_array_or_list_multiline_formatter = number_of_items
-fsharp_multiline_bracket_style = stroustrup

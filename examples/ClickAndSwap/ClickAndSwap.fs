@@ -17,7 +17,7 @@ module View =
         let clicker =
             Elem.button
                 [ Hx.get "/click"
-                  Hx.swap Hx.Swap.outerHTML ]
+                  Hx.swapOuterHtml ]
                 [ Text.raw "Click Me" ]
 
         let resetter =
@@ -26,8 +26,8 @@ module View =
                 Elem.br []
                 Elem.button
                     [ Hx.get "/reset"
-                      Hx.swap Hx.Swap.outerHTML
-                      Hx.target (Hx.Target.css "#wrapper") ]
+                      Hx.swapOuterHtml
+                      Hx.targetCss "#wrapper" ]
                     [ Text.raw "Reset" ] ]
 
 module App =
