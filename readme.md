@@ -234,51 +234,72 @@ Elem.button [ Hx.post "/example"; Hx.disabled HxTarget.This ] [
 ### `hx-inherit`
 
 ```fsharp
-// TODO
+Elem.div [ Hx.targerCss "#tab-container"; Hx.inherit' "hx-target" ] [
+    Elem.a [ Hx.boostOn; Attr.href "/tab1" ] [ Text.raw "Tab 1" ]
+    Elem.a [ Hx.boostOn; Attr.href "/tab2" ] [ Text.raw "Tab 2" ]
+    Elem.a [ Hx.boostOn; Attr.href "/tab3" ] [ Text.raw "Tab 3" ] ]
 ```
 
 ### `hx-disinherit`
 
+<div hx-boost="true" hx-select="#content" hx-target="#content" hx-disinherit="hx-target">
+  <button hx-get="/test"></button>
+</div>
+
 ```fsharp
-// TODO
+Elem.div [ Hx.boostOn; Hx.select "#content"; Hx.targetCss "#content"; Hx.disinherit "hx-target" ] [
+    Elem.button [ Hx.get "/test" ] [] ]
 ```
 
 ### `hx-encoding`
 
 ```fsharp
-// TODO
+Elem.form [ Hx.encodingMultipart ] [
+    (* ... form controls ... *) ]
 ```
 
 ### `hx-ext`
 
 ```fsharp
-// TODO
+Elem.div [ Hx.ext "example" ] [
+    Text.raw "Example extension is used in this part of the tree..."
+    Elem.div [ Hx.ext "ignore:example" ] [
+        Text.raw "... but it will not be used in this part." ] ]
 ```
 
 ### `hx-headers`
+<div hx-get="/example" hx-headers='{"myHeader": "My Value"}'>Get Some HTML, Including A Custom Header in the Request</div>
 
 ```fsharp
-// TODO
+Elem.div [ Hx.get "/example"; Hx.headers [ "myHeader", "My Value" ] ] [
+    Text.raw "Get Some HTML, Including A Custom Header in the Request" ]
+
+// Or to evaluate a dynamic value:
+Elem.div [ Hx.get "/example"; Hx.headers ([ "myHeader", "calculateValue()" ], true) ] [
+    Text.raw "Get Some HTML, Including A Custom Header in the Request" ]
+// ^-- produces hx-headers='js:{"myHeader": calculateValue()}'
 ```
 
 ### `hx-history`
 
 ```fsharp
-// TODO
+Elem.div [ Hx.historyOff ] []
 ```
 
 ### `hx-history-elt`
 
 ```fsharp
-// TODO
+Elem.div [ Hx.historyElt ] []
 ```
 
 ### `hx-indicator`
 
 ```fsharp
-// TODO
+Elem.div [] [
+    Elem.button [ Hx.post "/example"; Hx.indicator "#spinner" ] [
+        Text.raw "Post It!" ]
+    Elem.img [ Attr.id "spinner"; Attr.class' "htmx-indicator"; Attr.src "/img/bars.svg" ] ]
 ```
-
 
 ## Kudos
 
