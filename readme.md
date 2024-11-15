@@ -31,7 +31,7 @@ let demo =
 
 ## Getting Started
 
-This guide assumes you have a [Falco](https://github.com/pimbrouwers/Falco) project setup. If you don't, you can create a new Falco project using the following command:
+This guide assumes you have a [Falco](https://github.com/pimbrouwers/Falco) project setup. If you don't, you can create a new Falco project using the following commands. The full code for this guide can be found in the [Hello World example](examples/HelloWorld/).
 
 ```shell
 > dotnet new web -lang F# -o HelloWorld
@@ -49,6 +49,8 @@ Remove any `*.fs` files created automatically, create a new file named `Program.
 
 ```fsharp
 open Falco
+open Falco.Htmx
+open Falco.Markup
 open Falco.Routing
 open Microsoft.AspNetCore.Builder
 
@@ -63,7 +65,51 @@ wapp.UseFalco(endpoints)
     .Run()
 ```
 
-Now, let's incorporate htmx into our Falco application. Update the `Program.fs` file to the following:
+Now, let's incorporate htmx into our Falco application. First we'll define a simple route that returns a button that, when clicked, will swap the inner HTML of a target element with the response from a GET request.
+
+```fsharp
+let handleIndex : HttpHandler =
+    let html =
+        Elem.html [] [
+            Elem.head [] [
+                Elem.script [ Attr.src HtmxScript.cdnSrc ] [] ]
+            Elem.body [] [
+                Text.h1 "Example: Hello World"
+                Elem.button
+                    [ Hx.get "/click"
+                      Hx.swapOuterHtml ]
+                    [ Text.raw "Click Me" ] ] ]
+
+    Response.ofHtml html
+```
+
+Next, we'll define a handler for the click event that will return HTML from the server to replace the outer HTML of the button.
+
+```fsharp
+let handleClick : HttpHandler =
+    let html =
+        Text.h2 "Hello, World from the Server!"
+
+    Response.ofHtml html
+```
+
+And lastly, we'll make Falco aware of these routes by adding them to the `endpoints` list.
+
+```fsharp
+let endpoints =
+    [
+        get "/" handleIndex
+        get "/click" handleClick
+    ]
+```
+
+Save the file and run the application:
+
+```shell
+> dotnet run
+```
+
+Navigate to `https://localhost:5001` in your browser and click the button. You should see the text "Hello, World from the Server!" appear in place of the button.
 
 ## htmx Attributes
 
