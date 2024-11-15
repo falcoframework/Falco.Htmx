@@ -164,7 +164,9 @@ module HxTests =
     let ``Hx.pushUrl should produce element with hx-push-url attribute`` () =
         [
             testElem [ Hx.pushUrl true ], "true"
+            testElem [ Hx.pushUrlOn ], "true"
             testElem [ Hx.pushUrl false ], "false"
+            testElem [ Hx.pushUrlOff ], "false"
             testElem [ Hx.pushUrl "/" ], "/"
         ]
         |> List.iter (fun (elem, attrValue) ->

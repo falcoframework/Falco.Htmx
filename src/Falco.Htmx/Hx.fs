@@ -226,6 +226,15 @@ type Hx =
     static member pushUrl (enabled : bool) =
         Hx.pushUrl (if enabled then "true" else "false")
 
+    /// Pushes the URL into the browser location bar, creating a new history
+    /// entry.
+    static member pushUrlOn =
+        Hx.pushUrl true
+
+    /// Prevents the URL from being pushed into the browser location bar.
+    static member pushUrlOff =
+        Hx.pushUrl false
+
 
     // ------------
     // hx-sync
