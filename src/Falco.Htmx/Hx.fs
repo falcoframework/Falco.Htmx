@@ -161,7 +161,7 @@ type Hx =
 
     /// Enable progressive enhancement for links and forms
     static member swapOobOn =
-        Hx.swapOob (HxSwap.OuterHTML)
+        Hx.swapOob HxSwap.OuterHTML
 
 
     // ------------
@@ -184,6 +184,15 @@ type Hx =
     /// Select content from a response to be swapped in via an out-of-band swap.
     static member selectOob (selector : string) =
         Hx.selectOob (seq { selector })
+
+    /// Select content from a response to be swapped in via an out-of-band swap.
+    static member selectOob (selectors : (string * HxSwap) seq) =
+        selectors
+        |> Seq.map (fun (selector, swap) ->
+            String.Concat(selector, ":", HxSwap.AsString swap))
+        |> String.concat ","
+        |> Attr.create "hx-select-oob"
+
 
     // ------------
     // hx-boost

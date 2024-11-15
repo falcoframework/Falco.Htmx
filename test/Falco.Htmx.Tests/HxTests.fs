@@ -144,7 +144,10 @@ module HxTests =
     let ``Hx.selectOob should produce element with hx-select-oob attribute `` () =
         [
             testElem [ Hx.selectOob "#falco" ], "#falco"
+            testElem [ Hx.selectOob ["#falco"] ], "#falco"
             testElem [ Hx.selectOob [ "#falco"; "#htmx" ] ] , "#falco,#htmx"
+            testElem [ Hx.selectOob [ "#falco", HxSwap.OuterHTML ] ] , "#falco:outerHTML"
+            testElem [ Hx.selectOob [ "#falco", HxSwap.OuterHTML; "#htmx", HxSwap.InnerHTML ] ] , "#falco:outerHTML,#htmx:innerHTML"
         ]
         |> List.iter (fun (elem, attrValue) ->
             elem
