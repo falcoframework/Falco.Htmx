@@ -241,10 +241,10 @@ type Hx =
     // ------------
 
     /// Synchronize AJAX requests between multiple elements.
-    static member sync (targetOption : HxTarget, ?syncOption : HxSync) =
+    static member sync (selector : string, ?syncOption : HxSync) =
         match syncOption with
-        | Some hxSync -> String.Concat(HxTarget.AsString targetOption, ":", HxSync.AsString hxSync)
-        | None -> HxTarget.AsString targetOption
+        | Some hxSync -> String.Concat(selector, ":", HxSync.AsString hxSync)
+        | None -> selector
         |> Attr.create "hx-sync"
 
     // ------------

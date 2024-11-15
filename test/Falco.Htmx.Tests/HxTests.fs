@@ -176,20 +176,14 @@ module HxTests =
     [<Fact>]
     let ``Hx.sync should produce element with hx-sync attribute`` () =
         [
-            testElem [ Hx.sync HxTarget.This ], "this"
-            testElem [ Hx.sync HxTarget.NextSibling ], "next"
-            testElem [ Hx.sync HxTarget.PreviousSibling ], "previous"
-            testElem [ Hx.sync (HxTarget.Css "#falco") ], "#falco"
-            testElem [ Hx.sync (HxTarget.Closest ".falco") ], "closest .falco"
-            testElem [ Hx.sync (HxTarget.Find ".falco") ], "find .falco"
-            testElem [ Hx.sync (HxTarget.Next ".falco") ], "next .falco"
-            testElem [ Hx.sync (HxTarget.Previous ".falco") ], "previous .falco"
-            testElem [ Hx.sync (HxTarget.Closest ".falco", HxSync.Drop) ], "closest .falco:drop"
-            testElem [ Hx.sync (HxTarget.Closest ".falco", HxSync.Abort) ], "closest .falco:abort"
-            testElem [ Hx.sync (HxTarget.Closest ".falco", HxSync.Replace) ], "closest .falco:replace"
-            testElem [ Hx.sync (HxTarget.Closest ".falco", HxSync.QueueFirst) ], "closest .falco:queue first"
-            testElem [ Hx.sync (HxTarget.Closest ".falco", HxSync.QueueLast) ], "closest .falco:queue last"
-            testElem [ Hx.sync (HxTarget.Closest ".falco", HxSync.QueueAll) ], "closest .falco:queue all"
+            testElem [ Hx.sync "this" ], "this"
+            testElem [ Hx.sync "#falco" ], "#falco"
+            testElem [ Hx.sync (".falco", HxSync.Drop) ], ".falco:drop"
+            testElem [ Hx.sync (".falco", HxSync.Abort) ], ".falco:abort"
+            testElem [ Hx.sync (".falco", HxSync.Replace) ], ".falco:replace"
+            testElem [ Hx.sync (".falco", HxSync.QueueFirst) ], ".falco:queue first"
+            testElem [ Hx.sync (".falco", HxSync.QueueLast) ], ".falco:queue last"
+            testElem [ Hx.sync (".falco", HxSync.QueueAll) ], ".falco:queue all"
         ]
         |> List.iter (fun (elem, attrValue) ->
             elem
