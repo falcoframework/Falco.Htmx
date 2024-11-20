@@ -236,10 +236,6 @@ Elem.div [ Hx.get "/example"; Hx.params "*" ] [
 
 ### `hx-vals`
 
-  <div hx-get="/example" hx-vals='{"myVal": "My Value"}'>Get Some HTML, Including A Value in the Request</div>
-  <div hx-get="/example" hx-vals='js:{myVal: calculateValue()}'>Get Some HTML, Including a Dynamic Value from Javascript in the Request</div>
-
-
 ```fsharp
 Elem.div [ Hx.get "/example"; Hx.vals """{"myVal": "My Value"}""" ] [
     Text.raw "Get Some HTML, Including A Value in the Request" ]
@@ -250,10 +246,6 @@ Elem.div [ Hx.get "/example"; Hx.vals "js:{myVal: calculateValue()}" ] [
 ```
 
 ### `hx-confirm`
-
-<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
-  Delete My Account
-</button>
 
 ```fsharp
 Elem.button [ Hx.delete "/account"; Hx.confirm "Are you sure you wish to delete your account?" ] [
@@ -288,10 +280,6 @@ Elem.div [ Hx.targerCss "#tab-container"; Hx.inherit' "hx-target" ] [
 
 ### `hx-disinherit`
 
-<div hx-boost="true" hx-select="#content" hx-target="#content" hx-disinherit="hx-target">
-  <button hx-get="/test"></button>
-</div>
-
 ```fsharp
 Elem.div [ Hx.boostOn; Hx.select "#content"; Hx.targetCss "#content"; Hx.disinherit "hx-target" ] [
     Elem.button [ Hx.get "/test" ] [] ]
@@ -314,7 +302,6 @@ Elem.div [ Hx.ext "example" ] [
 ```
 
 ### `hx-headers`
-<div hx-get="/example" hx-headers='{"myHeader": "My Value"}'>Get Some HTML, Including A Custom Header in the Request</div>
 
 ```fsharp
 Elem.div [ Hx.get "/example"; Hx.headers [ "myHeader", "My Value" ] ] [
