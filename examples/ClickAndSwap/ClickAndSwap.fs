@@ -55,6 +55,8 @@ let main args =
             get "/click" App.handleClick
             get "/reset" App.handleReset
         ]
-    wapp.UseFalco(endpoints)
+
+    wapp.UseRouting()
+        .UseFalco(endpoints)
         .Run()
     0 // Exit code

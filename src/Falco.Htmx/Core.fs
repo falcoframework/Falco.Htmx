@@ -1,8 +1,6 @@
 namespace Falco.Htmx
 
 open System
-open System.Text.Json
-open Falco.Markup
 
 module HtmxScript =
     /// The CDN URL for htmx

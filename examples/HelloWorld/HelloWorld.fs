@@ -32,5 +32,6 @@ let endpoints =
         get "/click" handleClick
     ]
 
-wapp.UseFalco(endpoints)
+wapp.UseRouting()
+    .UseFalco(endpoints)
     .Run()
