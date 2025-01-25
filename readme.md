@@ -345,4 +345,4 @@ There's an [issue](https://github.com/pimbrouwers/Falco.Htmx/issues) for that.
 
 ## License
 
-Built with ♥ by [Pim Brouwers](https://github.com/pimbrouwers) and [Damian Plaza](https://github.com/dpraimeyuu). Licensed under [Apache License 2.0](https://github.com/pimbrouwers/Falco.Htmx/blob/master/LICENSE).
+Licensed under [Apache License 2.0](https://github.com/pimbrouwers/Falco.Htmx/blob/master/LICENSE).
