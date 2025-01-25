@@ -7,11 +7,11 @@ open Microsoft.AspNetCore.Mvc.Testing
 open Xunit
 open Falco.Htmx.IntegrationTests.App
 
-module FalcoOpenApiTestServer =
+module FalcoHtmxTestServer =
     let createFactory() =
         new WebApplicationFactory<Program>()
 
 module Tests =
-    let private factory = FalcoOpenApiTestServer.createFactory ()
+    let private factory = FalcoHtmxTestServer.createFactory ()
 
 module Program = let [<EntryPoint>] main _ = 0
