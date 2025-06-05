@@ -20,13 +20,13 @@
     <!-- NuGet config -->
     <PackageId>Falco.Htmx</PackageId>
     <PackageTags>fsharp;web;falco;falco-sharp;htmx;</PackageTags>
-    <PackageProjectUrl>https://github.com/pimbrouwers/Falco.Htmx</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/FalcoFramework/Falco.Htmx</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/pimbrouwers/Falco.Htmx</RepositoryUrl>
+    <RepositoryUrl>https://github.com/FalcoFramework/Falco.Htmx</RepositoryUrl>
 
     <!-- SourceLink settings -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>

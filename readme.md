@@ -1,7 +1,7 @@
 # Falco.Htmx
 
 [![NuGet Version](https://img.shields.io/nuget/v/Falco.Htmx.svg)](https://www.nuget.org/packages/Falco.Htmx)
-[![build](https://github.com/pimbrouwers/Falco.Htmx/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Falco.Htmx/actions/workflows/build.yml)
+[![build](https://github.com/FalcoFramework/Falco.Htmx/actions/workflows/build.yml/badge.svg)](https://github.com/FalcoFramework/Falco.Htmx/actions/workflows/build.yml)
 
 ```fsharp
 open Falco.Markup
@@ -15,7 +15,7 @@ let demo =
         [ Text.raw "Reset" ]
 ```
 
-[Falco.Htmx](https://github.com/pimbrouwers/Falco.Htmx) brings type-safe [htmx](https://htmx.org/) support to [Falco](https://github.com/pimbrouwers/Falco). It provides a complete mapping of all attributes, typed request data and ready-made response modifiers.
+[Falco.Htmx](https://github.com/FalcoFramework/Falco.Htmx) brings type-safe [htmx](https://htmx.org/) support to [Falco](https://github.com/FalcoFramework/Falco). It provides a complete mapping of all attributes, typed request data and ready-made response modifiers.
 
 ## Key Features
 
@@ -31,7 +31,7 @@ let demo =
 
 ## Getting Started
 
-This guide assumes you have a [Falco](https://github.com/pimbrouwers/Falco) project setup. If you don't, you can create a new Falco project using the following commands. The full code for this guide can be found in the [Hello World example](examples/HelloWorld/).
+This guide assumes you have a [Falco](https://github.com/FalcoFramework/Falco) project setup. If you don't, you can create a new Falco project using the following commands. The full code for this guide can be found in the [Hello World example](examples/HelloWorld/).
 
 ```shell
 > dotnet new web -lang F# -o HelloWorld
@@ -341,8 +341,8 @@ Big thanks and kudos to [@dpraimeyuu](https://github.com/dpraimeyuu) for their c
 
 ## Find a bug?
 
-There's an [issue](https://github.com/pimbrouwers/Falco.Htmx/issues) for that.
+There's an [issue](https://github.com/FalcoFramework/Falco.Htmx/issues) for that.
 
 ## License
 
-Licensed under [Apache License 2.0](https://github.com/pimbrouwers/Falco.Htmx/blob/master/LICENSE).
+Licensed under [Apache License 2.0](https://github.com/FalcoFramework/Falco.Htmx/blob/master/LICENSE).
