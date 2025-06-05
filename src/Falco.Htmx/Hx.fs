@@ -1,6 +1,7 @@
 namespace Falco.Htmx
 
 open System
+open System.Net
 open System.Text.Json
 open Falco.Markup
 
@@ -325,7 +326,7 @@ type Hx =
 
     /// Add values to submit with the request (JSON format)
     static member vals json =
-        Attr.create "hx-vals" json
+        Attr.create "hx-vals" (WebUtility.HtmlEncode json)
 
     /// Add values to submit with the request (JS format)
     static member valsJs js =
@@ -462,6 +463,7 @@ type Hx =
                 String.Concat("js:", json)
             else
                 json
+        |> WebUtility.HtmlEncode
         |> Attr.create "hx-headers"
 
 
@@ -577,4 +579,4 @@ type Hx =
             else
                 json
 
-        Attr.create "hx-request" requestValue
+        Attr.create "hx-request" (WebUtility.HtmlEncode requestValue)

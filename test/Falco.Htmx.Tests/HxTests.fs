@@ -1,5 +1,6 @@
 namespace Falco.Htmx.Tests
 
+open System.Net
 open Falco.Htmx
 open Falco.Markup
 open FsUnit.Xunit
@@ -229,7 +230,7 @@ module HxTests =
         ]
         |> List.iter (fun (elem, attrValue) ->
             elem
-            |> should equal $"""<div hx-vals="{attrValue}">div</div>""")
+            |> should equal $"""<div hx-vals="{WebUtility.HtmlEncode attrValue}">div</div>""")
 
     [<Fact>]
     let ``Hx.confirm should produce element with hx-confirm attribute`` () =
@@ -313,7 +314,7 @@ module HxTests =
         ]
         |> List.iter (fun (elem, attrValue) ->
             elem
-            |> should equal ($"""<div hx-headers="{attrValue}">div</div>"""))
+            |> should equal $"""<div hx-headers="{WebUtility.HtmlEncode attrValue}">div</div>""")
 
     [<Fact>]
     let ``Hx.historyOff should produce element with hx-history attribute`` () =
@@ -383,7 +384,7 @@ module HxTests =
         ]
         |> List.iter (fun (elem, attrValue) ->
             elem
-            |> should equal ("<div hx-request=\"" + attrValue + "\">div</div>"))
+            |> should equal ($"""<div hx-request="{WebUtility.HtmlEncode attrValue}">div</div>"""))
 
     [<Fact>]
     let ``Hx.encodingMultipart should produce element with hx-encoding attribute`` () =
