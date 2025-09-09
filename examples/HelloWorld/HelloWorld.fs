@@ -6,21 +6,21 @@ open Microsoft.AspNetCore.Builder
 
 let handleIndex : HttpHandler =
     let html =
-        Elem.html [] [
-            Elem.head [] [
-                Elem.script [ Attr.src HtmxScript.cdnSrc ] [] ]
-            Elem.body [] [
-                Text.h1 "Example: Hello World"
-                Elem.button
+        _html [] [
+            _head [] [
+                _script [ _src_ HtmxScript.cdnSrc ] [] ]
+            _body [] [
+                _h1' "Example: Hello World"
+                _button
                     [ Hx.get "/click"
                       Hx.swapOuterHtml ]
-                    [ Text.raw "Click Me" ] ] ]
+                    [ _text "Click Me" ] ] ]
 
     Response.ofHtml html
 
 let handleClick : HttpHandler =
     let html =
-        Text.h2 "Hello, World from the Server!"
+        _h2' "Hello, World from the Server!"
 
     Response.ofHtml html
 
