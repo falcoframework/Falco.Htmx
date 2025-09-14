@@ -2,47 +2,12 @@ namespace Falco.Htmx
 
 open Falco
 
-// type AjaxContext(?event, ?source, ?handler, ?target, ?swap, ?values, ?headers) =
-//     /// The source element of the request
-//     member _.Source: HxTarget option = source
-//     /// An event that "triggered" the request
-//     member _.Event: string option = event
-//     /// A callback that will handle the response HTML
-//     member _.Handler: string option = handler
-//     /// The target to swap the response into
-//     member _.Target: HxTarget option = target
-//     /// How the response will be swapped in relative to the target
-//     member _.Swap: HxSwap option = swap
-//     /// Values to submit with the request
-//     member _.Values: (string * string) list = defaultArg values []
-//     /// Headers to submit with the request
-//     member _.Headers: (string * string) list = defaultArg headers []
-
 [<RequireQualifiedAccess>]
 module Response =
     open System.Text.Json
 
     [<Literal>]
     let private _trueValue = "true"
-
-    // /// Allows you to do a client-side redirect that does not do a full page reload
-    // let withHxLocation (path: string, ctx: AjaxContext option) : HttpResponseModifier =
-    //     let headerValue =
-    //         match ctx with
-    //         | None -> path
-    //         | Some ctx' ->
-    //             [
-    //                 "path", path
-    //                 "source", Option.map HxTarget.AsString ctx'.Source |> Option.defaultValue ""
-    //                 "event", Option.defaultValue "" ctx'.Event
-    //                 "handler", Option.defaultValue "" ctx'.Handler
-    //                 "target", Option.map HxTarget.AsString ctx'.Target |> Option.defaultValue ""
-    //                 "swap", Option.map HxSwap.AsString ctx'.Swap |> Option.defaultValue ""
-    //             ]
-    //             |> Map.ofList
-    //             |> fun x -> JsonSerializer.Serialize(x)
-
-    //     Response.withHeaders [ "HX-Location", headerValue ]
 
     /// Pushes a new url into the history stack
     let withHxPushUrl (url: string) : HttpResponseModifier =
@@ -60,13 +25,13 @@ module Response =
     let withHxReplaceUrl (url: string) : HttpResponseModifier =
         Response.withHeaders [ "HX-Replace-Url", url ]
 
-    // /// Allows you to specify how the response will be swapped. See hx-swap for possible values
-    // let withHxReswap (option: HxSwap) =
-    //     Response.withHeaders [ "HX-Reswap", HxSwap.AsString option ]
+    /// Allows you to specify how the response will be swapped. See hx-swap for possible values
+    let withHxReswap (option: HxSwap) =
+        Response.withHeaders [ "HX-Reswap", HxSwap.AsString option ]
 
-    // /// A CSS selector that updates the target of the content update to a different element on the page
-    // let withHxRetarget (option: HxTarget) =
-    //     Response.withHeaders [ "HX-Retarget", HxTarget.AsString option ]
+    /// A CSS selector that updates the target of the content update to a different element on the page
+    let withHxRetarget (option: HxTarget) =
+        Response.withHeaders [ "HX-Retarget", HxTarget.AsString option ]
 
     /// Allows you to trigger client side events, see the documentation for more info
     let withHxTrigger<'T> (triggerResponse: HxTriggerResponse) : HttpResponseModifier =
