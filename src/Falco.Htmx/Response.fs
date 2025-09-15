@@ -2,12 +2,60 @@ namespace Falco.Htmx
 
 open Falco
 
+/// Context for the HX-Location Response Header
+type HxLocation(?event, ?source, ?handler, ?target, ?swap, ?values, ?headers) =
+    /// The source element of the request
+    member _.Source: HxTarget option = source
+    /// An event that "triggered" the request
+    member _.Event: string option = event
+    /// A callback that will handle the response HTML
+    member _.Handler: string option = handler
+    /// The target to swap the response into
+    member _.Target: HxTarget option = target
+    /// How the response will be swapped in relative to the target
+    member _.Swap: HxSwap option = swap
+    /// Values to submit with the request
+    member _.Values: (string * string) list = defaultArg values []
+    /// Headers to submit with the request
+    member _.Headers: (string * string) list = defaultArg headers []
+
+/// Value for the HX-Trigger Response Header
+type HxTriggerResponse =
+    /// A list of event names to trigger
+    | Events of string list
+    /// A list of event names and associated data to trigger
+    | DetailedEvents of (string * obj) list
+
 [<RequireQualifiedAccess>]
 module Response =
     open System.Text.Json
 
     [<Literal>]
     let private _trueValue = "true"
+
+    /// Allows you to do a client-side redirect that does not do a full page reload
+    let withHxLocationOptions (path: string, ctx: HxLocation option) : HttpResponseModifier =
+        let headerValue =
+            match ctx with
+            | None -> path
+            | Some ctx' ->
+                [
+                    "path", path
+                    "source", Option.map HxTarget.AsString ctx'.Source |> Option.defaultValue ""
+                    "event", Option.defaultValue "" ctx'.Event
+                    "handler", Option.defaultValue "" ctx'.Handler
+                    "target", Option.map HxTarget.AsString ctx'.Target |> Option.defaultValue ""
+                    "swap", Option.map HxSwap.AsString ctx'.Swap |> Option.defaultValue ""
+                ]
+                |> Map.ofList
+                |> fun x -> JsonSerializer.Serialize(x)
+
+        Response.withHeaders [ "HX-Location", headerValue ]
+
+    /// Allows you to do a client-side redirect that does not do a full page reload. Alias
+    /// for withHxLocationOptions with None context.
+    let withHxLocation (path: string) : HttpResponseModifier =
+        withHxLocationOptions (path, None)
 
     /// Pushes a new url into the history stack
     let withHxPushUrl (url: string) : HttpResponseModifier =

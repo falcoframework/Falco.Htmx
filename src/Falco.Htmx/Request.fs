@@ -22,11 +22,6 @@ type HtmxRequestHeaders =
       /// The id of the triggered element if it exists
       HxTrigger: string option }
 
-/// Value for the HX-Trigger Response Header
-type HxTriggerResponse =
-    | Events of string list
-    | DetailedEvents of (string * obj) list
-
 [<RequireQualifiedAccess>]
 module Request =
     let getHtmxHeaders (ctx: HttpContext) : HtmxRequestHeaders =

@@ -19,9 +19,10 @@ let demo =
 
 ## Key Features
 
-- Idiomatic mapping of `htmx` attributes (i.e., `hx-get`, `hx-post`, `hx-target` etc.).
+- [Idiomatic mapping](#htmx-attributes) of `htmx` attributes (i.e., `hx-get`, `hx-post`, `hx-target` etc.).
 - Typed access to htmx request headers.
 - Prepared response modifiers for common use-cases (i.e., `HX-location`, `HX-Push-Url`).
+- Built-in [support](#template-fragments) for [template fragments](https://htmx.org/docs/#template-fragments).
 
 ## Design Goals
 
@@ -334,6 +335,116 @@ Elem.div [] [
         Text.raw "Post It!" ]
     Elem.img [ Attr.id "spinner"; Attr.class' "htmx-indicator"; Attr.src "/img/bars.svg" ] ]
 ```
+
+## htmx Response Modifiers
+
+### `HX-Location`
+
+```fsharp
+Response.withHxLocation "/new-location"
+>> Response.ofHtml _h1' "HX-Location"
+
+// this is equivalent to:
+Response.withHxLocationOptions ("/new-location", None)
+>> Response.ofHtml _h1' "HX-Location"
+
+// with context:
+let ctx = HxLocation(event = "click", source = HxTarget.This)
+Response.withHxLocationOptions ("/new-location", Some ctx)
+>> Response.ofHtml _h1' "HX-Location"
+```
+
+### `HX-Push-Url`
+
+```fsharp
+Response.withHxPushUrl "/new-push-url"
+>> Response.ofHtml _h1' "HX-Push-Url"
+```
+
+### `HX-Redirect`
+
+```fsharp
+Response.withHxRedirect "/redirect-url"
+>> Response.ofHtml _h1' "HX-Redirect"
+```
+
+### `HX-Refresh`
+
+```fsharp
+Response.withHxRefresh
+>> Response.ofHtml _h1' "HX-Refresh"
+```
+
+### `HX-Replace-Url`
+
+```fsharp
+Response.withHxReplaceUrl "/replace-url"
+>> Response.ofHtml _h1' "HX-Replace-Url"
+```
+
+### `HX-Reswap`
+
+```fsharp
+Response.withHxReswap HxSwap.InnerHTML
+>> Response.ofHtml _h1' "HX-Reswap"
+
+// with selector:
+Response.withHxReswap (HxSwap.OuterHTML, "#falco")
+>> Response.ofHtml _h1' "HX-Reswap"
+```
+
+### `HX-Retarget`
+
+```fsharp
+Response.withHxRetarget HxTarget.This
+>> Response.ofHtml _h1' "HX-Retarget"
+
+// with selector:
+Response.withHxRetarget (HxTarget.Css "#falco")
+>> Response.ofHtml _h1' "HX-Retarget"
+```
+
+### `HX-Trigger`
+
+```fsharp
+Response.withHxTrigger (HxTriggerResponse.Events [ "myEvent" ])
+>> Response.ofHtml _h1' "HX-Trigger"
+
+// or with detailed events (content is serialized to JSON):
+Response.withHxTrigger (HxTriggerResponse.DetailedEvents [ ("myEvent", {| someData = 123 |}) ])
+>> Response.ofHtml _h1' "HX-Trigger"
+```
+
+### `HX-Trigger-After-Settle`
+
+```fsharp
+Response.withHxTrigger (HxTriggerResponse.Events [ "myEvent" ])
+>> Response.withHxTriggerAfterSettle
+>> Response.ofHtml _h1' "HX-Trigger-After-Settle"
+```
+
+### `HX-Trigger-After-Swap`
+
+```fsharp
+Response.withHxTrigger (HxTriggerResponse.Events [ "myEvent" ])
+>> Response.withHxTriggerAfterSwap
+>> Response.ofHtml _h1' "HX-Trigger-After-Swap"
+```
+
+### `HX-Reselect`
+
+```fsharp
+Response.withHxReselect "#falco"
+>> Response.ofHtml _h1' "HX-Reselect"
+```
+
+## Template Fragments
+
+Falco.Htmx has built-in support for [template fragments](https://htmx.org/docs/#template-fragments). This allows you to return only a fragment of a larger HTML document in response to an htmx request, without having to create separate template function for each fragment.
+
+This is supported by the `Response.ofFragment` function, the `hx-swap` attribute and optionally the `hx-select` attribute.
+
+For an overview, see the [Click & Load](/examples/ClickToLoad/) example.
 
 ## Kudos
 

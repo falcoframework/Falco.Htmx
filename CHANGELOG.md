@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-09-15
+
+### Added
+
+- `HX-Location` response header can now be set with or without context via `Response.withHxLocation` and `Response.withHxLocationOptions`.
+
 ## [1.0.2] - 2025-09-09
 
 ### Added
