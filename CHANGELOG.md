@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2025-12-22
+
+### Added
+
+- Support for `net10.0` target framework.
+
 ## [1.1.0] - 2025-09-15
 
 ### Added
